@@ -28,3 +28,10 @@ Kor_monthly = readtable("DataCty\KoreaData\monthly.csv");
 Kor_annual = readtable("DataCty\KoreaData\annual.csv");
 
 % Merge Our datasets
+Jap_cpi = readtable("DataCty\japan\cpi_japan.csv");
+Jap_emp = readtable("DataCty\japan\employment_japan.csv");
+Jap_ir = readtable("DataCty\japan\ir_japan.csv");
+Jap_gdp = readtable("DataCty\japan\real_gdp_japan.csv");
+Jap_cap = readtable("DataCty\japan\real_gross_fixed_capital_formation_japan.csv");
+Jap_con =readtable("DataCty\japan\real_hh_final_consumption_japan.csv");
+Jap_tfp = readtable("DataCty\japan\tfp_japan.csv");
