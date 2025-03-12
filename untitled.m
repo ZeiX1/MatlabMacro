@@ -78,4 +78,68 @@ tfp_japan = retime(tfp_japan, 'quarterly', 'spline');
 % Aggregate monthly employment into quarterly employment
 employment_japan = retime(employment_japan, 'quarterly', 'mean');
 
-% Seasonal Adjustments of Time Series
+% Merged dataset
+japan = synchronize(...
+    real_gdp_japan, ...
+    real_consumption_japan, ...
+    real_investment_japan, ...
+    tfp_japan, ...
+    cpi_japan, ...
+    ir_japan, ...
+    employment_japan, ...
+    'union' ...
+);
+
+% Plotting the time series
+figure;
+% Subplot 1: Real GDP
+subplot(2, 2, 1); 
+plot(japan.Date, japan.GDP, 'LineWidth', 1.5);
+title('Real GDP of Japan');
+xlabel('Date');
+ylabel('Millions of Domestic Currency');
+grid on;
+% Subplot 2: Real Consumption
+subplot(2, 2, 2); 
+plot(japan.Date, japan.Consumption, 'LineWidth', 1.5);
+title('Real Households Final Consumption Expenditure of Japan');
+xlabel('Date');
+ylabel('Millions of Domestic Currency');
+grid on;
+% Subplot 3: TFP
+subplot(2, 2, 3); 
+plot(japan.Date, japan.TFP, 'LineWidth', 1.5);
+title('Total Factor Productivity of Japan');
+xlabel('Date');
+ylabel('TFP (Index 2017=1)');
+grid on;
+% Subplot 4: Employment
+subplot(2, 2, 4); 
+plot(japan.Date, japan.Employment, 'LineWidth', 1.5);
+title('Employment of Japan');
+xlabel('Date');
+ylabel('Persons (15 Years or over)');
+grid on;
+
+% Subplot 5: Inflation
+figure;
+subplot(2, 2, 1); 
+plot(japan.Date, japan.Inflation, 'LineWidth', 1.5);
+title('Inflation of Japan');
+xlabel('Date');
+ylabel('CPI, All Items (Index 2015=100)');
+grid on;
+% Subplot 6: Interest Rates
+subplot(2, 2, 2); 
+plot(japan.Date, japan.IR, 'LineWidth', 1.5);
+title('Interest Rates of Japan');
+xlabel('Date');
+ylabel('Central Bank Immediate Rates (%)');
+grid on;
+% Subplot 4: Real Invesment
+subplot(2, 2, 3); 
+plot(japan.Date, japan.Employment, 'LineWidth', 1.5);
+title('Real Gross Capital Formation of Japan');
+xlabel('Date');
+ylabel('Millions of Domestic Currency');
+grid on;
