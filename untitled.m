@@ -143,3 +143,17 @@ title('Real Gross Capital Formation of Japan');
 xlabel('Date');
 ylabel('Millions of Domestic Currency');
 grid on;
+
+% Log transformations
+japan.LogGDP = log(japan.GDP);
+japan.LogConsumption = log(japan.Consumption);
+japan.LogInvestment = log(japan.Investment);
+japan.LogTFP = log(japan.TFP);
+japan.LogInflation = log(japan.Inflation);
+japan.LogIR = log(japan.IR);
+japan.LogEmployment = log(japan.Employment);
+
+
+% Log transformations
+hpfilter(japan.LogGDP, 1600) 
+
