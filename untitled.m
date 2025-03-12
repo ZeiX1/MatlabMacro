@@ -23,10 +23,8 @@
 %                   Rate: Total for Korea, Percent, Monthly, Not Seasonally Adjusted
 %                   Data Updated: 2025-02-17
 
-----------------  ---------------------------------------------------------------------  
-Kor_quaterly = readtable("DataCty\KoreaData\quarterly.csv");
+Kor_quaterly = readtable('DataCty\KoreaData\quarterly.csv');
 Kor_monthly = readtable("DataCty\KoreaData\monthly.csv");
 Kor_annual = readtable("DataCty\KoreaData\annual.csv");
 
 % Merge Our datasets
-MergedTableKorea = join(J1,J2,J3,J4,J5,J6,J7,J8,J9, 'Keys', 'ID');
