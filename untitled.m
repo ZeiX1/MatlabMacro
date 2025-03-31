@@ -93,67 +93,226 @@ japan = synchronize(...
 % Plotting the time series
 figure;
 % Subplot 1: Real GDP
-subplot(2, 2, 1); 
-plot(japan.Date, japan.GDP, 'LineWidth', 1.5);
-title('Real GDP of Japan');
+subplot(3, 3, 1); 
+plot(japan.Date, japan.GDP, 'b', 'LineWidth', 1.5);
+title('Real GDP');
 xlabel('Date');
 ylabel('Millions of Domestic Currency');
 grid on;
 % Subplot 2: Real Consumption
-subplot(2, 2, 2); 
-plot(japan.Date, japan.Consumption, 'LineWidth', 1.5);
-title('Real Households Final Consumption Expenditure of Japan');
+subplot(3, 3, 2); 
+plot(japan.Date, japan.Consumption, 'b', 'LineWidth', 1.5);
+title('Real Households Final Consumption');
 xlabel('Date');
 ylabel('Millions of Domestic Currency');
 grid on;
 % Subplot 3: TFP
-subplot(2, 2, 3); 
-plot(japan.Date, japan.TFP, 'LineWidth', 1.5);
-title('Total Factor Productivity of Japan');
+subplot(3, 3, 3); 
+plot(japan.Date, japan.TFP, 'b', 'LineWidth', 1.5);
+title('Total Factor Productivity');
 xlabel('Date');
 ylabel('TFP (Index 2017=1)');
 grid on;
 % Subplot 4: Employment
-subplot(2, 2, 4); 
-plot(japan.Date, japan.Employment, 'LineWidth', 1.5);
-title('Employment of Japan');
+subplot(3, 3, 4); 
+plot(japan.Date, japan.Employment, 'b', 'LineWidth', 1.5);
+title('Employment');
 xlabel('Date');
 ylabel('Persons (15 Years or over)');
 grid on;
-
 % Subplot 5: Inflation
-figure;
-subplot(2, 2, 1); 
-plot(japan.Date, japan.Inflation, 'LineWidth', 1.5);
-title('Inflation of Japan');
-xlabel('Date');
+subplot(3, 3, 5); 
+plot(japan.Date, japan.Inflation, 'b', 'LineWidth', 1.5);
 ylabel('CPI, All Items (Index 2015=100)');
-grid on;
-% Subplot 6: Interest Rates
-subplot(2, 2, 2); 
-plot(japan.Date, japan.IR, 'LineWidth', 1.5);
-title('Interest Rates of Japan');
 xlabel('Date');
-ylabel('Central Bank Immediate Rates (%)');
+title('Inflation (CPI)');
 grid on;
-% Subplot 4: Real Invesment
-subplot(2, 2, 3); 
-plot(japan.Date, japan.Employment, 'LineWidth', 1.5);
-title('Real Gross Capital Formation of Japan');
+% Subplot 6: Real Investment
+subplot(3, 3, 6); 
+plot(japan.Date, japan.Investment, 'b', 'LineWidth', 1.5);
+title('Real Investment');
 xlabel('Date');
 ylabel('Millions of Domestic Currency');
 grid on;
+% Subplot 7: Interest Rates
+subplot(3, 3, 7); 
+plot(japan.Date, japan.IR, 'b', 'LineWidth', 1.5);
+title('Interest Rates');
+xlabel('Date');
+ylabel('Central Bank Rates (%)');
+grid on;
+% Subplot 8: Inflation Rates
+subplot(3, 3, 8); 
+plot(cpi_japan.Date(2:end), rates, 'b-', 'LineWidth', 1); % Raw data in BLUE
+title('Inflation Rates');
+xlabel('Date');
+ylabel('Inflation Rates (%)');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 9: Empty
+subplot(3, 3, 9); 
+text(0.5, 0.5, 'Additional Metric', 'HorizontalAlignment', 'center');
+axis off;
+% Add overall title
+sgtitle('Japan Economic Indicators', 'FontSize', 16, 'FontWeight', 'bold');
+% Adjust spacing between subplots
+set(gcf, 'Position', get(gcf, 'Position').*[1 1 1.2 1.2]);
 
-% Log transformations
-japan.LogGDP = log(japan.GDP);
-japan.LogConsumption = log(japan.Consumption);
-japan.LogInvestment = log(japan.Investment);
-japan.LogTFP = log(japan.TFP);
-japan.LogInflation = log(japan.Inflation);
-japan.LogIR = log(japan.IR);
-japan.LogEmployment = log(japan.Employment);
+% HP Filter
+[trend_gdp_japan , cycle_gdp_japan] = hpfilter(log(real_gdp_japan.GDP), 1600);
+[trend_consumption_japan , cycle_consumption_japan] = hpfilter(log(real_consumption_japan.Consumption), 1600);
+[trend_investment_japan , cycle_investment_japan] = hpfilter(log(real_investment_japan.Investment), 1600);
+[trend_employment_japan , cycle_employment_japan] = hpfilter(log(employment_japan.Employment), 1600);
+[trend_tfp_japan , cycle_tfp_japan] = hpfilter(tfp_japan.TFP, 1600);
+[trend_cpi_japan , cycle_cpi_japan] = hpfilter(cpi_japan.Inflation, 1600);
+[trend_ir_japan , cycle_ir_japan] = hpfilter(ir_japan.IR, 1600);
+% Inflation rates % 
+rates = diff(log(cpi_japan.Inflation)) * 400;  % Quarterly annualized % 
+[trend_rates_japan , cycle_rates_japan] = hpfilter(rates, 1600);
 
+% Plotting the trend component
+figure;
+% Subplot 1: Real GDP
+subplot(3, 3, 1); 
+plot(real_gdp_japan.Date, log(real_gdp_japan.GDP), 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(real_gdp_japan.Date, trend_gdp_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Real GDP (in log)');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 2: Real Consumption
+subplot(3, 3, 2);  
+plot(real_consumption_japan.Date, log(real_consumption_japan.Consumption), 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(real_consumption_japan.Date, trend_consumption_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Real Consumption (in log)');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 3: TFP
+subplot(3, 3, 3); 
+plot(tfp_japan.Date, tfp_japan.TFP, 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(tfp_japan.Date, trend_tfp_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Total Factor Productivity');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 4: Employment
+subplot(3, 3, 4); 
+plot(employment_japan.Date, log(employment_japan.Employment), 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(employment_japan.Date, trend_employment_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Employment (in log)');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 5: Inflation
+subplot(3, 3, 5); 
+plot(cpi_japan.Date, cpi_japan.Inflation, 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(cpi_japan.Date, trend_cpi_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Inflation (CPI)');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 6: Real Investment
+subplot(3, 3, 6); 
+plot(real_investment_japan.Date, log(real_investment_japan.Investment), 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(real_investment_japan.Date, trend_investment_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Real Investment (in log)');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 7: Interest Rates
+subplot(3, 3, 7); 
+plot(ir_japan.Date, ir_japan.IR, 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(ir_japan.Date, trend_ir_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Interest rates');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 8: Inflation Rates
+subplot(3, 3, 8); 
+plot(cpi_japan.Date(2:end), rates, 'b-', 'LineWidth', 1); % Raw data in BLUE
+hold on;
+plot(cpi_japan.Date(2:end), trend_rates_japan, 'r--', 'LineWidth', 1);  % Cycle in red dashed
+hold off;
+title('Inflation Rates');
+xlabel('Date');
+legend('Data', 'Trend',  'Location', 'best');
+% Subplot 9: Empty
+subplot(3, 3, 9); 
+text(0.5, 0.5, 'Additional Metric', 'HorizontalAlignment', 'center');
+axis off;
+% Add overall title
+sgtitle('HP filter: Trend Component', 'FontSize', 16, 'FontWeight', 'bold');
+% Adjust spacing between subplots
+set(gcf, 'Position', get(gcf, 'Position').*[1 1 1.2 1.2]);
 
-% Log transformations
-hpfilter(japan.LogGDP, 1600) 
-
+% Plotting the cyclical component
+figure;
+% Subplot 1: Real GDP Cycle
+subplot(3, 3, 1); 
+plot(real_gdp_japan.Date, cycle_gdp_japan, 'r-', 'LineWidth', 1);
+title('Real GDP (in log)');
+grid on;
+% Subplot 2: Real Consumption Cycle
+subplot(3, 3, 2);  
+plot(real_consumption_japan.Date, cycle_consumption_japan, 'r-', 'LineWidth', 1);
+title('Real Consumption (in log)');
+grid on;
+% Subplot 3: TFP Cycle
+subplot(3, 3, 3); 
+plot(tfp_japan.Date, cycle_tfp_japan, 'r-', 'LineWidth', 1);
+title('Total Factor Productivity');
+grid on;
+% Subplot 4: Employment Cycle
+subplot(3, 3, 4); 
+plot(employment_japan.Date, cycle_employment_japan, 'r-', 'LineWidth', 1);
+title('Employment (in log)');
+grid on;
+% Subplot 5: Inflation Cycle
+subplot(3, 3, 5); 
+plot(cpi_japan.Date, cycle_cpi_japan, 'r-', 'LineWidth', 1);
+title('Inflation (CPI)');
+grid on;
+% Subplot 6: Real Investment Cycle
+subplot(3, 3, 6); 
+plot(real_investment_japan.Date, cycle_investment_japan, 'r-', 'LineWidth', 1);
+title('Real Investment (in log)');
+grid on;
+% Subplot 7: Interest Rates Cycle
+subplot(3, 3, 7); 
+plot(ir_japan.Date, cycle_ir_japan, 'r-', 'LineWidth', 1);
+title('Interest Rates');
+xlabel('Year');
+grid on;
+% Subplot 8: Inflation Rates Cycle
+subplot(3, 3, 8); 
+plot(cpi_japan.Date(2:end), cycle_rates_japan, 'r-', 'LineWidth', 1);
+hold on;
+hold off;
+title('Inflation Rates');
+xlabel('Year');
+grid on;
+% Subplot 9: Empty
+subplot(3, 3, 9); 
+text(0.5, 0.5, 'Additional Metric', 'HorizontalAlignment', 'center');
+axis off;
+% Add zero reference lines to all subplots
+for i = 1:8
+    subplot(3, 3, i);
+    h = yline(0, 'k--', 'LineWidth', 0.5);
+    h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+    hLegend = legend('Cyclical Component', 'Location', 'best');
+    hLegend.ItemTokenSize = [10,10]; % Makes the line sample smaller
+    hLegend.FontSize = 8;
+end
+% Overall title
+sgtitle('HP filter: Cyclical Component ', 'FontSize', 16, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+% Adjust spacing between subplots
+set(gcf, 'Position', get(gcf, 'Position').*[1 1 1.2 1.2]);
+set(gcf, 'Color', 'w'); % White background
